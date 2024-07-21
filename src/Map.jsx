@@ -78,6 +78,8 @@ const Map = () => {
         }
       });
       const currentTemperature = currentResponse.data.current.temp_c;
+      const currentCondition = currentResponse.data.current.condition.text;
+      const conditionIcon = currentResponse.data.current.condition.icon;
 
       // Fetch historical weather data
       const historicalPromises = Array.from({ length: 7 }, (_, i) => {
@@ -99,7 +101,7 @@ const Map = () => {
 
       const historicalResponses = await Promise.all(historicalPromises);
       setHistoricalData(historicalResponses);
-      setWeatherData({ temperature: currentTemperature });
+      setWeatherData({ temperature: currentTemperature, condition: currentCondition, icon: conditionIcon });
 
       // Get location name from lat/lng
       try {
@@ -201,16 +203,18 @@ const Map = () => {
               </div>
             ) : dataLoaded && selectedLocation ? (
               <>
-                <Typography variant="h6" style={{ color: '#1976d2', marginTop: '20px' }}>
-                  Location Information
-                </Typography>
-                <Typography><strong>Location Name:</strong> {locationName}</Typography>
-                <Typography><strong>Latitude:</strong> {selectedLocation.lat}</Typography>
-                <Typography><strong>Longitude:</strong> {selectedLocation.lng}</Typography>
-                <Typography variant="h6" style={{ color: '#1976d2', marginTop: '20px' }}>
-                  Temperatures data
-                </Typography>
-                <Typography><strong>Current Temperature:</strong> {weatherData.temperature}°C</Typography>
+                {locationName}
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem' }}>
+                  <Typography style={{ fontSize: '32px' }}>{weatherData.temperature}°C</Typography>
+                  {weatherData.icon && (
+                    <img 
+                      src={`http:${weatherData.icon}`} 
+                      alt={weatherData.condition} 
+                      style={{ width: '50px', height: '50px', objectFit: 'contain' }} 
+                    />
+                  )}
+                  <Typography style={{ fontSize: '1rem' }}>({weatherData.condition})</Typography>
+                </div>
                 {historicalData.length ? (
                   <div style={{ width: '100%', height: '400px' }}> {/* Ensure the container is wide enough */}
                     <TemperatureChart historicalData={historicalData} />
