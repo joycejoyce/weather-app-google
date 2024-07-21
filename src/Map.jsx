@@ -156,8 +156,8 @@ const Map = () => {
           How to use this app
         </Typography>
         <Typography>
-          <strong>1. Click on the map</strong> or <strong>Enter a location name in the search box</strong> and click "Search"<br />
-          <strong>2. The current temperature and historical temperatures for the past week</strong> will be displayed in the right section.
+          1. <strong>Click on the map</strong> or <strong>Enter a location name in the search box and click "Search"</strong>.<br />
+          2. <strong>The current temperature and historical temperatures for the past week</strong> will be displayed in the right section.
         </Typography>
       </Box>
       <Grid container spacing={0} style={{ width: '950px' }}>
@@ -207,10 +207,10 @@ const Map = () => {
                 <Typography><strong>Location Name:</strong> {locationName}</Typography>
                 <Typography><strong>Latitude:</strong> {selectedLocation.lat}</Typography>
                 <Typography><strong>Longitude:</strong> {selectedLocation.lng}</Typography>
-                <Typography><strong>Current Temperature:</strong> {weatherData.temperature}°C</Typography>
                 <Typography variant="h6" style={{ color: '#1976d2', marginTop: '20px' }}>
-                  Historical Temperatures for the Past Week
+                  Temperatures data
                 </Typography>
+                <Typography><strong>Current Temperature:</strong> {weatherData.temperature}°C</Typography>
                 {historicalData.length ? (
                   <div style={{ width: '100%', height: '400px' }}> {/* Ensure the container is wide enough */}
                     <TemperatureChart historicalData={historicalData} />
