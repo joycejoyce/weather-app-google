@@ -8,13 +8,13 @@ import TemperatureChart from './TemperatureChart'; // Import TemperatureChart
 
 const libraries = ['places'];
 const mapContainerStyle = {
-  height: '80vh',
+  height: '70vh',
   width: '600px' // Adjust map width if needed
 };
 const infoContainerStyle = {
   width: '650px',  // Ensure the info container takes full width of the Grid item
   padding: '20px',
-  height: '80vh',
+  height: '77vh',
   overflow: 'auto'
 };
 const promptStyle = {
@@ -22,7 +22,8 @@ const promptStyle = {
   padding: '10px',
   backgroundColor: '#f5f5f5',
   border: '1px solid #ddd',
-  borderRadius: '4px'
+  borderRadius: '4px',
+  width: '900px'
 };
 const titleStyle = {
   marginBottom: '10px',
@@ -152,8 +153,25 @@ const Map = () => {
           <strong>2. The current temperature and historical temperatures for the past week</strong> will be displayed in the right section.
         </Typography>
       </Box>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} style={{ width: '950px' }}>
         <Grid item xs={12} md={8}>
+          <Box style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: '0.5rem', width: '600px' }}>
+            <TextField
+              label="Search Location"
+              variant="outlined"
+              value={searchLocation}
+              onChange={(e) => setSearchLocation(e.target.value)}
+              style={{ flexGrow: 1 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSearch}
+              style={{ height: '100%' }}
+            >
+              Search
+            </Button>
+          </Box>
           <div style={mapContainerStyle}>
             <GoogleMap
               mapContainerStyle={{ height: '100%', width: '100%' }}
@@ -170,17 +188,6 @@ const Map = () => {
         </Grid>
         <Grid item xs={12} md={4}>
           <Paper style={infoContainerStyle}>
-            <TextField
-              label="Search Location"
-              variant="outlined"
-              fullWidth
-              value={searchLocation}
-              onChange={(e) => setSearchLocation(e.target.value)}
-              style={{ marginBottom: '10px' }}
-            />
-            <Button variant="contained" color="primary" onClick={handleSearch}>
-              Search
-            </Button>
             {loading ? (
               <CircularProgress />
             ) : dataLoaded && selectedLocation ? (
