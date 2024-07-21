@@ -18,7 +18,7 @@ const infoContainerStyle = {
   overflow: 'auto'
 };
 const promptStyle = {
-  marginBottom: '20px',
+  marginBottom: '30px',
   padding: '10px',
   backgroundColor: '#f5f5f5',
   border: '1px solid #ddd',
@@ -37,6 +37,7 @@ const Map = () => {
   const [loading, setLoading] = useState(false);
   const [searchLocation, setSearchLocation] = useState('');
   const [locationName, setLocationName] = useState(''); // State for location name
+  const [dataLoaded, setDataLoaded] = useState(false); // State to track if all data is loaded
 
   const mapRef = useRef(null); // Create a reference for the map instance
 
@@ -54,22 +55,9 @@ const Map = () => {
     const lng = e.latLng.lng();
     setSelectedLocation({ lat, lng });
     setLoading(true);
+    setDataLoaded(false);
     await fetchWeatherData(lat, lng);
-
-    // Get location name from lat/lng
-    try {
-      const reverseGeocodeResponse = await new window.google.maps.Geocoder().geocode({
-        location: { lat, lng }
-      });
-      if (reverseGeocodeResponse.results.length > 0) {
-        setLocationName(reverseGeocodeResponse.results[0].formatted_address); // Use formatted_address
-      } else {
-        setLocationName('Unknown Location');
-      }
-    } catch (error) {
-      console.error('Error fetching place details:', error);
-      setLocationName('Unknown Location');
-    }
+    setDataLoaded(true);
   }, []);
 
   const fetchWeatherData = async (lat, lng) => {
@@ -104,6 +92,21 @@ const Map = () => {
       const historicalResponses = await Promise.all(historicalPromises);
       setHistoricalData(historicalResponses);
       setWeatherData({ temperature: currentTemperature });
+
+      // Get location name from lat/lng
+      try {
+        const reverseGeocodeResponse = await new window.google.maps.Geocoder().geocode({
+          location: { lat, lng }
+        });
+        if (reverseGeocodeResponse.results.length > 0) {
+          setLocationName(reverseGeocodeResponse.results[0].formatted_address); // Use formatted_address
+        } else {
+          setLocationName('Unknown Location');
+        }
+      } catch (error) {
+        console.error('Error fetching place details:', error);
+        setLocationName('Unknown Location');
+      }
     } catch (error) {
       console.error('Error fetching weather data:', error);
     } finally {
@@ -122,7 +125,10 @@ const Map = () => {
           if (mapRef.current) {
             mapRef.current.panTo({ lat: lat(), lng: lng() });
           }
+          setLoading(true);
+          setDataLoaded(false);
           await fetchWeatherData(lat(), lng());
+          setDataLoaded(true);
           setLocationName(results.results[0].formatted_address); // Use formatted_address
         }
       } catch (error) {
@@ -142,11 +148,11 @@ const Map = () => {
           How to use this app
         </Typography>
         <Typography>
-          <strong>Click on the map</strong> or <strong>Enter a location name in the search box</strong> and click "Search"<br />
-          <strong>The current temperature and historical temperatures for the past week</strong> will be displayed in the right section.
+          <strong>1. Click on the map</strong> or <strong>Enter a location name in the search box</strong> and click "Search"<br />
+          <strong>2. The current temperature and historical temperatures for the past week</strong> will be displayed in the right section.
         </Typography>
       </Box>
-      <Grid container spacing={2}>
+      <Grid container spacing={0}>
         <Grid item xs={12} md={8}>
           <div style={mapContainerStyle}>
             <GoogleMap
@@ -177,7 +183,7 @@ const Map = () => {
             </Button>
             {loading ? (
               <CircularProgress />
-            ) : selectedLocation ? (
+            ) : dataLoaded && selectedLocation ? (
               <>
                 <Typography variant="h6" style={{ color: '#1976d2', marginTop: '20px' }}>
                   Location Information
@@ -187,7 +193,7 @@ const Map = () => {
                 <Typography><strong>Longitude:</strong> {selectedLocation.lng}</Typography>
                 <Typography><strong>Current Temperature:</strong> {weatherData.temperature}°C</Typography>
                 <Typography variant="h6" style={{ color: '#1976d2', marginTop: '20px' }}>
-                  Historical Temperatures for the Past Week:
+                  Historical Temperatures for the Past Week
                 </Typography>
                 {historicalData.length ? (
                   <div style={{ width: '100%', height: '400px' }}> {/* Ensure the container is wide enough */}
