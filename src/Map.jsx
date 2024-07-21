@@ -29,6 +29,13 @@ const titleStyle = {
   marginBottom: '10px',
   fontWeight: 'bold'
 };
+const loadingContainerStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100%',
+};
+
 const center = { lat: 23.6978, lng: 120.9605 }; // Center of Taiwan
 
 const Map = () => {
@@ -189,7 +196,9 @@ const Map = () => {
         <Grid item xs={12} md={4}>
           <Paper style={infoContainerStyle}>
             {loading ? (
-              <CircularProgress />
+              <div style={loadingContainerStyle}>
+                <CircularProgress />
+              </div>
             ) : dataLoaded && selectedLocation ? (
               <>
                 <Typography variant="h6" style={{ color: '#1976d2', marginTop: '20px' }}>
