@@ -3,19 +3,30 @@ import React, { useState, useCallback, useRef } from 'react';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import axios from 'axios';
 import config from './config';
-import { Typography, Paper, Container, Grid, CircularProgress, TextField, Button } from '@mui/material';
+import { Typography, Paper, Container, Grid, CircularProgress, TextField, Button, Box } from '@mui/material';
 import TemperatureChart from './TemperatureChart'; // Import TemperatureChart
 
 const libraries = ['places'];
 const mapContainerStyle = {
-  height: '90vh',
+  height: '80vh',
   width: '600px' // Adjust map width if needed
 };
 const infoContainerStyle = {
   width: '650px',  // Ensure the info container takes full width of the Grid item
   padding: '20px',
-  height: '90vh',
+  height: '80vh',
   overflow: 'auto'
+};
+const promptStyle = {
+  marginBottom: '20px',
+  padding: '10px',
+  backgroundColor: '#f5f5f5',
+  border: '1px solid #ddd',
+  borderRadius: '4px'
+};
+const titleStyle = {
+  marginBottom: '10px',
+  fontWeight: 'bold'
 };
 const center = { lat: 23.6978, lng: 120.9605 }; // Center of Taiwan
 
@@ -51,10 +62,13 @@ const Map = () => {
         location: { lat, lng }
       });
       if (reverseGeocodeResponse.results.length > 0) {
-        setLocationName(reverseGeocodeResponse.results[0].formatted_address);
+        setLocationName(reverseGeocodeResponse.results[0].formatted_address); // Use formatted_address
+      } else {
+        setLocationName('Unknown Location');
       }
     } catch (error) {
-      console.error('Error fetching reverse geocode data:', error);
+      console.error('Error fetching place details:', error);
+      setLocationName('Unknown Location');
     }
   }, []);
 
@@ -109,10 +123,11 @@ const Map = () => {
             mapRef.current.panTo({ lat: lat(), lng: lng() });
           }
           await fetchWeatherData(lat(), lng());
-          setLocationName(results.results[0].formatted_address); // Set location name
+          setLocationName(results.results[0].formatted_address); // Use formatted_address
         }
       } catch (error) {
-        console.error('Error fetching geocode data:', error);
+        console.error('Error fetching geocode or place details:', error);
+        setLocationName('Unknown Location');
       }
     }
   }, [searchLocation]);
@@ -122,6 +137,15 @@ const Map = () => {
 
   return (
     <Container>
+      <Box style={promptStyle}>
+        <Typography variant="h6" style={titleStyle}>
+          How to use this app
+        </Typography>
+        <Typography>
+          <strong>Click on the map</strong> or <strong>Enter a location name in the search box</strong> and click "Search"<br />
+          <strong>The current temperature and historical temperatures for the past week</strong> will be displayed in the right section.
+        </Typography>
+      </Box>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <div style={mapContainerStyle}>
@@ -155,12 +179,16 @@ const Map = () => {
               <CircularProgress />
             ) : selectedLocation ? (
               <>
-                <Typography variant="h6">Location Information</Typography>
+                <Typography variant="h6" style={{ color: '#1976d2', marginTop: '20px' }}>
+                  Location Information
+                </Typography>
                 <Typography><strong>Location Name:</strong> {locationName}</Typography>
                 <Typography><strong>Latitude:</strong> {selectedLocation.lat}</Typography>
                 <Typography><strong>Longitude:</strong> {selectedLocation.lng}</Typography>
                 <Typography><strong>Current Temperature:</strong> {weatherData.temperature}°C</Typography>
-                <Typography variant="h6">Historical Temperatures for the Past Week:</Typography>
+                <Typography variant="h6" style={{ color: '#1976d2', marginTop: '20px' }}>
+                  Historical Temperatures for the Past Week:
+                </Typography>
                 {historicalData.length ? (
                   <div style={{ width: '100%', height: '400px' }}> {/* Ensure the container is wide enough */}
                     <TemperatureChart historicalData={historicalData} />
@@ -170,7 +198,7 @@ const Map = () => {
                 )}
               </>
             ) : (
-              <Typography>Click on the map or search for a location to get the weather information.</Typography>
+              <Typography>No location selected. Click on the map or enter a location name in the search box and click "Search".</Typography>
             )}
           </Paper>
         </Grid>

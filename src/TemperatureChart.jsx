@@ -3,7 +3,6 @@ import React from 'react';
 import Plot from 'react-plotly.js';
 
 const TemperatureChart = ({ historicalData }) => {
-  // Extract dates and temperatures from historicalData
   const dates = historicalData.map(data => data.date);
   const temperatures = historicalData.map(data => data.temperature);
 
@@ -14,17 +13,23 @@ const TemperatureChart = ({ historicalData }) => {
           x: dates,
           y: temperatures,
           type: 'scatter',
-          mode: 'lines+markers',
-          marker: { color: 'blue' },
-        },
+          mode: 'lines+markers+text',
+          marker: { size: 10 }, // Bigger markers
+          text: temperatures,
+          textposition: 'top center', // Label every data point
+          line: { color: '#007bff' }, // Line color
+          textfont: {
+            size: 12, // Font size for labels
+            color: '#000' // Label color
+          }
+        }
       ]}
       layout={{
-        title: 'Past Week Temperature',
         xaxis: { title: 'Date' },
         yaxis: { title: 'Temperature (°C)' },
         autosize: true,
-        width: 600, // Adjust width as needed
-        height: 400 // Adjust height as needed
+        width: 600,  // Set width
+        height: 400  // Set height
       }}
     />
   );
