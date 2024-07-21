@@ -4,11 +4,19 @@ import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import axios from 'axios';
 import config from './config';
 import { Typography, Paper, Container, Grid, CircularProgress } from '@mui/material';
+import TemperatureChart from './TemperatureChart'; // Import TemperatureChart
 
 const libraries = ['places'];
 const mapContainerStyle = {
   height: '100vh',
-  width: '600px'
+  width: '600px' // Adjust map width if needed
+};
+const infoContainerStyle = {
+  width: '100%',  // Make the info container take full width of the Grid item
+  padding: '20px',
+  height: '100vh',
+  overflow: 'auto',
+  width: '650px'
 };
 const center = { lat: 23.6978, lng: 120.9605 }; // Center of Taiwan
 
@@ -74,19 +82,21 @@ const Map = () => {
     <Container>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
-          <GoogleMap
-            mapContainerStyle={mapContainerStyle}
-            center={center}
-            zoom={8}
-            onClick={onMapClick}
-          >
-            {selectedLocation && (
-              <Marker position={selectedLocation} />
-            )}
-          </GoogleMap>
+          <div style={mapContainerStyle}>
+            <GoogleMap
+              mapContainerStyle={{ height: '100%', width: '100%' }}
+              center={center}
+              zoom={8}
+              onClick={onMapClick}
+            >
+              {selectedLocation && (
+                <Marker position={selectedLocation} />
+              )}
+            </GoogleMap>
+          </div>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Paper style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
+          <Paper style={infoContainerStyle}>
             {loading ? (
               <CircularProgress />
             ) : selectedLocation ? (
@@ -95,11 +105,9 @@ const Map = () => {
                 <Typography><strong>Latitude:</strong> {selectedLocation.lat}</Typography>
                 <Typography><strong>Longitude:</strong> {selectedLocation.lng}</Typography>
                 <Typography><strong>Current Temperature:</strong> {weatherData.temperature}°C</Typography>
-                <Typography variant="h6">Historical Temperatures for the Past Week:</Typography>
+                {/* <Typography variant="h6">Historical Temperatures for the Past Week:</Typography> */}
                 {historicalData.length ? (
-                  historicalData.map(data => (
-                    <Typography key={data.date}>{data.date}: {data.temperature}°C</Typography>
-                  ))
+                  <TemperatureChart historicalData={historicalData} />
                 ) : (
                   <Typography>No historical data available</Typography>
                 )}
