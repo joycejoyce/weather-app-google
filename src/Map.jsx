@@ -71,7 +71,7 @@ const Map = () => {
   const fetchWeatherData = async (lat, lng) => {
     try {
       // Fetch current weather
-      const currentResponse = await axios.get('http://api.weatherapi.com/v1/current.json', {
+      const currentResponse = await axios.get('https://api.weatherapi.com/v1/current.json', {
         params: {
           key: config.WEATHER_API_KEY,
           q: `${lat},${lng}`
@@ -87,7 +87,7 @@ const Map = () => {
         date.setDate(date.getDate() - i);
         const formattedDate = date.toISOString().split('T')[0];
 
-        return axios.get('http://api.weatherapi.com/v1/history.json', {
+        return axios.get('https://api.weatherapi.com/v1/history.json', {
           params: {
             key: config.WEATHER_API_KEY,
             q: `${lat},${lng}`,
@@ -208,7 +208,7 @@ const Map = () => {
                   <Typography style={{ fontSize: '32px' }}>{weatherData.temperature}°C</Typography>
                   {weatherData.icon && (
                     <img 
-                      src={`http:${weatherData.icon}`} 
+                      src={`https:${weatherData.icon}`} 
                       alt={weatherData.condition} 
                       style={{ width: '50px', height: '50px', objectFit: 'contain' }} 
                     />
